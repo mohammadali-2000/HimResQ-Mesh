@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HimResQ Mesh // Autonomous Mountain Disaster Triage & LoRa Mesh Network</title>
+  <meta name="description" content="Offline Edge AI and Peer-to-Peer Mesh Network for Mountain Disasters and Blackout Triage. Engineered for Hack in Hills 2026, Manali, Himachal Pradesh.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070a10;
+      --card-bg: rgba(14, 21, 33, 0.75);
+      --border: rgba(56, 189, 248, 0.15);
+      --accent: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.08), transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      background: rgba(7, 10, 16, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+      color: #fff;
+    }
+    .brand-sub {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .telemetry-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+    .tele-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+    }
+    .tele-val {
+      color: #fff;
+      font-weight: 600;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 1024px) {
+      main {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mesh-radar-container {
+      position: relative;
+      width: 100%;
+      height: 420px;
+      background: radial-gradient(circle at center, #0c1424, #05080f);
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      overflow: hidden;
+    }
+    canvas#radarCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .mesh-controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    button.btn {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    button.btn:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+    button.btn-emergency {
+      border-color: var(--red);
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff8b8b;
+    }
+    button.btn-emergency:hover {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+    .triage-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .incident-select {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      width: 100%;
+      outline: none;
+    }
+    .incident-select:focus {
+      border-color: var(--accent);
+    }
+    .triage-output {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+    .triage-tag {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .tag-red { background: rgba(239, 68, 68, 0.25); color: #ff6b6b; border: 1px solid var(--red); }
+    .tag-yellow { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid var(--amber); }
+    .tag-green { background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid var(--emerald); }
+    .packet-log {
+      height: 240px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+    .packet-entry {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.4rem;
+    }
+    .packet-entry .time { color: var(--accent); }
+    .packet-entry .hop { color: var(--amber); }
+    .packet-entry .data { color: #f1f5f9; }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🏔️</div>
+      <div>
+        <div class="brand-title">HIMRESQ MESH</div>
+        <div class="brand-sub">Solang Valley Tactical Edge Node • 2,560m</div>
+      </div>
+    </div>
+    <div class="telemetry-bar">
+      <div class="tele-item">
+        <span class="pulse-dot"></span>
+        <span>STATUS:</span>
+        <span class="tele-val" style="color: var(--emerald);">OFF-GRID ACTIVE</span>
+      </div>
+      <div class="tele-item">
+        <span>BATTERY:</span>
+        <span class="tele-val">98.4%</span>
+      </div>
+      <div class="tele-item">
+        <span>LoRa FREQ:</span>
+        <span class="tele-val">868 MHz</span>
+      </div>
+      <div class="tele-item">
+        <span>ACTIVE NODES:</span>
+        <span class="tele-val" id="nodeCount">4</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Tactical Radar & Topographical Mesh Map -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">📡 Real-Time LoRa/BLE Topology Map</div>
+        <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted);">Manali • Rohtang Pass Corridor</span>
+      </div>
+      <div class="mesh-radar-container">
+        <canvas id="radarCanvas"></canvas>
+      </div>
+      <div class="mesh-controls">
+        <button class="btn" id="btnPingMesh">⚡ Ping Mesh Relay</button>
+        <button class="btn btn-emergency" id="btnTriggerSOS">🚨 Broadcast Mountain SOS</button>
+        <button class="btn" id="btnClearLog">🧹 Clear Log</button>
+      </div>
+    </section>
+
+    <!-- Right Column: AI Triage Classifier & Packet Telemetry -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <section class="card triage-panel">
+        <div class="card-header">
+          <div class="card-title">🧠 On-Device AI Triage (Quantized SLM)</div>
+          <span class="triage-tag tag-green">Zero Cloud Dependency</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem;">
+          Select or formulate a mountain casualty report. The on-device engine categorizes severity, recommends tactical first aid, and compresses the vitals into a 48-byte binary packet for LoRa hop.
+        </p>
+        <select class="incident-select" id="incidentPreset">
+          <option value="1">Incident #1: Avalanche entrapment near Gulaba (2 victims, unresponsive)</option>
+          <option value="2">Incident #2: Compound tibia fracture & hypothermia at Rohtang North (1 victim)</option>
+          <option value="3">Incident #3: Disoriented trekkers near Solang Ridge, mild dehydration (3 victims)</option>
+          <option value="4">Incident #4: Extreme AMS (High Altitude Pulmonary Edema) at 3,900m</option>
+        </select>
+        <button class="btn" id="btnClassify" style="width: 100%; justify-content: center;">Run On-Device Triage Classification</button>
+        <div class="triage-output" id="triageResult">
+          <span class="triage-tag tag-red">TRIAGE: PRIORITY 1 (CRITICAL RED)</span>
+          <div style="margin: 0.5rem 0; line-height: 1.5;">
+            <strong>Immediate Diagnosis:</strong> Avalanche asphyxiation risk & severe core hypothermia.<br>
+            <strong>Tactical First-Aid:</strong> Clear airway, initiate passive core rewarming, prepare thermal cocoon sled.<br>
+            <strong>Packet Size:</strong> 42 bytes (Compressed from 380 chars via CBOR).
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Packet Telemetry Log -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">📦 LoRa Packet Relay Telemetry</div>
+          <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--emerald);">CRC Check: PASS</span>
+        </div>
+        <div class="packet-log" id="packetLog">
+          <div class="packet-entry">
+            <span class="time">[11:42:01]</span> <span class="hop">[NODE-01 &#8594; BASE]</span> <span class="data">BEACON RSSI: -84dBm SNR: 8.5dB (Solang Base Online)</span>
+          </div>
+          <div class="packet-entry">
+            <span class="time">[11:42:15]</span> <span class="hop">[NODE-02 &#8594; NODE-01]</span> <span class="data">HEALTH CHECK: Battery 94%, Mesh Hop Delay: 12ms</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      <strong>HimResQ Mesh</strong> &bull; Engineered for <strong>Hack in Hills 2026</strong> (Manali, Himachal Pradesh)<br>
+      Lead Architect: <a href="https://github.com/mohammadali-2000" target="_blank">Syed Mohammad Ali</a> &bull; 
+      <a href="https://github.com/mohammadali-2000/HimResQ-Mesh" target="_blank">View GitHub Repository</a>
+    </p>
+  </footer>
+
+  <script>
+    // Tactical Radar & Mesh Canvas Visualization
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+    const logEl = document.getElementById('packetLog');
+    let width, height;
+
+    const nodes = [
+      { id: 'BASE', name: 'Manali Command Base', x: 0.5, y: 0.85, type: 'base', status: 'online' },
+      { id: 'NODE-A', name: 'Solang Valley Relay', x: 0.35, y: 0.55, type: 'relay', status: 'online' },
+      { id: 'NODE-B', name: 'Gulaba Ridge Relay', x: 0.65, y: 0.45, type: 'relay', status: 'online' },
+      { id: 'NODE-C', name: 'Marhi High Outpost', x: 0.45, y: 0.25, type: 'relay', status: 'online' },
+      { id: 'NODE-D', name: 'Rohtang Pass (Stranded)', x: 0.75, y: 0.15, type: 'sensor', status: 'sos' }
+    ];
+
+    let pulsePackets = [];
+
+    function resize() {
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function addLog(from, to, text, isEmergency = false) {
+      const now = new Date();
+      const timeStr = `[${now.toTimeString().split(' ')[0]}]`;
+      const div = document.createElement('div');
+      div.className = 'packet-entry';
+      if (isEmergency) {
+        div.style.color = '#ff6b6b';
+        div.style.fontWeight = 'bold';
+      }
+      div.innerHTML = `<span class="time">${timeStr}</span> <span class="hop">[${from} &#8594; ${to}]</span> <span class="data">${text}</span>`;
+      logEl.prepend(div);
+    }
+
+    function triggerMeshPacket(sourceIndex, targetIndex, isSOS = false) {
+      pulsePackets.push({
+        from: nodes[sourceIndex],
+        to: nodes[targetIndex],
+        progress: 0,
+        speed: 0.015,
+        isSOS: isSOS
+      });
+    }
+
+    let radarAngle = 0;
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw Topographical Grid Circles
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.07)';
+      ctx.lineWidth = 1;
+      for (let r = 50; r < Math.max(width, height); r += 60) {
+        ctx.beginPath();
+        ctx.arc(width * 0.5, height * 0.5, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Rotating Radar Sweep Line
+      radarAngle += 0.015;
+      const rx = width * 0.5 + Math.cos(radarAngle) * (Math.max(width, height) * 0.7);
+      const ry = height * 0.5 + Math.sin(radarAngle) * (Math.max(width, height) * 0.7);
+      const gradient = ctx.createLinearGradient(width * 0.5, height * 0.5, rx, ry);
+      gradient.addColorStop(0, 'rgba(56, 189, 248, 0.25)');
+      gradient.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.5, height * 0.5);
+      ctx.lineTo(rx, ry);
+      ctx.stroke();
+
+      // Mesh Connection Links
+      const links = [[0, 1], [0, 2], [1, 3], [2, 3], [3, 4], [2, 4]];
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      links.forEach(([i, j]) => {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x * width, nodes[i].y * height);
+        ctx.lineTo(nodes[j].x * width, nodes[j].y * height);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Traveling Packet Pulses
+      for (let i = pulsePackets.length - 1; i >= 0; i--) {
+        const p = pulsePackets[i];
+        p.progress += p.speed;
+        const curX = p.from.x * width + (p.to.x * width - p.from.x * width) * p.progress;
+        const curY = p.from.y * height + (p.to.y * height - p.from.y * height) * p.progress;
+
+        ctx.fillStyle = p.isSOS ? '#ef4444' : '#38bdf8';
+        ctx.shadowColor = p.isSOS ? '#ef4444' : '#38bdf8';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(curX, curY, p.isSOS ? 5 : 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        if (p.progress >= 1) {
+          pulsePackets.splice(i, 1);
+        }
+      }
+
+      // Draw Nodes
+      nodes.forEach((n, idx) => {
+        const nx = n.x * width;
+        const ny = n.y * height;
+
+        ctx.fillStyle = n.status === 'sos' ? '#ef4444' : (n.type === 'base' ? '#10b981' : '#38bdf8');
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(nx, ny, n.type === 'base' ? 8 : 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Label
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillText(n.name, nx + 10, ny + 4);
+      });
+
+      requestAnimationFrame(render);
+    }
+    render();
+
+    // Interactive Button Handlers
+    document.getElementById('btnPingMesh').addEventListener('click', () => {
+      triggerMeshPacket(0, 1);
+      setTimeout(() => triggerMeshPacket(1, 3), 400);
+      setTimeout(() => triggerMeshPacket(3, 4), 800);
+      addLog('COMMAND BASE', 'ROHTANG MESH', 'MESH PING: RSSI -79dBm, Round-trip hop: 42ms');
+    });
+
+    document.getElementById('btnTriggerSOS').addEventListener('click', () => {
+      triggerMeshPacket(4, 3, true);
+      setTimeout(() => triggerMeshPacket(3, 1, true), 350);
+      setTimeout(() => triggerMeshPacket(1, 0, true), 700);
+      addLog('ROHTANG NODE-D', 'COMMAND BASE', 'EMERGENCY SOS: Rohtang Pass Col (HAPE Victim - Vital Score 92/100)', true);
+    });
+
+    document.getElementById('btnClearLog').addEventListener('click', () => {
+      logEl.innerHTML = '';
+    });
+
+    // Preset Triage Classifier
+    const presets = {
+      '1': {
+        tag: 'tag-red',
+        title: 'TRIAGE: PRIORITY 1 (CRITICAL RED)',
+        body: '<strong>Immediate Diagnosis:</strong> Avalanche asphyxiation risk & severe core hypothermia.<br><strong>Tactical First-Aid:</strong> Clear airway, initiate passive core rewarming, prepare thermal cocoon sled.<br><strong>Packet Size:</strong> 42 bytes (Compressed from 380 chars via CBOR).'
+      },
+      '2': {
+        tag: 'tag-red',
+        title: 'TRIAGE: PRIORITY 1 (CRITICAL RED)',
+        body: '<strong>Immediate Diagnosis:</strong> Open compound tibia fracture with arterial threat.<br><strong>Tactical First-Aid:</strong> Apply tourniquet 2 inches above wound, splint leg, monitor capillary refill every 15 min.<br><strong>Packet Size:</strong> 38 bytes (Payload hash: 0x8F9B2C).'
+      },
+      '3': {
+        tag: 'tag-green',
+        title: 'TRIAGE: PRIORITY 3 (STABLE GREEN)',
+        body: '<strong>Immediate Diagnosis:</strong> Mild altitude fatigue & dehydration.<br><strong>Tactical First-Aid:</strong> Hydrate with ORS electrolyte solution, rest in sheltered terrain, descend 400m if weather permits.<br><strong>Packet Size:</strong> 29 bytes.'
+      },
+      '4': {
+        tag: 'tag-red',
+        title: 'TRIAGE: PRIORITY 1 (CRITICAL RED)',
+        body: '<strong>Immediate Diagnosis:</strong> High Altitude Pulmonary Edema (HAPE) with crackles and cyanosis.<br><strong>Tactical First-Aid:</strong> Immediate descent mandatory, administer supplemental oxygen / Gamow bag if available, avoid exertion.<br><strong>Packet Size:</strong> 44 bytes.'
+      }
+    };
+
+    document.getElementById('btnClassify').addEventListener('click', () => {
+      const selected = document.getElementById('incidentPreset').value;
+      const res = presets[selected];
+      const outputEl = document.getElementById('triageResult');
+      outputEl.innerHTML = `
+        <span class="triage-tag ${res.tag}">${res.title}</span>
+        <div style="margin: 0.5rem 0; line-height: 1.5;">${res.body}</div>
+      `;
+      addLog('EDGE-AI', 'TRIAGE-CORE', `Processed casualty classification [Tag: ${res.title.split(' ')[2]}]`);
+    });
+  </script>
+</body>
+</html>
